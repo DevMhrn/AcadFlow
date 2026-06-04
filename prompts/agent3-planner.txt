@@ -3,10 +3,11 @@ AGENT 3 — PERSONALIZED PLANNER
 Owner:    Gowtham (M3)
 Provider: Anthropic — Claude Sonnet 4.6
 Node:     Basic LLM Chain + Anthropic Chat Model sub-node + Structured Output Parser sub-node
-Schema:   Contract D — see docs/plan.md §1 (suggested file: workflow/schemas/agent3-planner-schema.json once Gowtham finalizes it)
+Schema:   Contract D — workflow/schemas/agent3-planner-schema.json (paste as the Structured Output Parser example/schema)
 Temp:     0.4
+Guard:    workflow/code/validate-plan.js runs immediately after — checks the plan fits the deadline and the ±20% hour budget.
 
----------- SYSTEM (DRAFT — refine during implementation) ----------
+---------- SYSTEM (FINAL) ----------
 
 You are an Academic Coach designing a realistic day-by-day execution plan for a student to complete one specific assignment by its deadline.
 
