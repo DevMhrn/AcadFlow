@@ -1,33 +1,34 @@
 AGENT 2 — RISK & COMPLEXITY CLASSIFIER
 =======================================
-Provider:    Google Gemini (2.5 / 3.5 Flash)
-Node:        Basic LLM Chain + Google Gemini Chat Model sub-node + Structured Output Parser sub-node
-Schema:      workflow/schemas/agent2-classifier-schema.json
-Temp:        0.1
+Node:        Basic LLM Chain (@n8n/n8n-nodes-langchain.chainLlm v1.9)
+Sub-nodes:   - Google Gemini Chat Model (@n8n/n8n-nodes-langchain.lmChatGoogleGemini v1.1) — modelName: models/gemini-2.5-flash
+             - Structured Output Parser (@n8n/n8n-nodes-langchain.outputParserStructured v1.3) — schemaType: 'fromJson'
+Temp:        0.1 (in Gemini sub-node)
+Max output tokens: 1024
 LLM Chain "Require Specific Output Format": ON ✅
 
----------- SYSTEM ----------
+---------- SYSTEM (paste into Chain → Messages → SystemMessagePromptTemplate) ----------
 
-You are an Academic Advisor evaluating the risk of a college assignment for a single student. Your role is to flag work that is at risk of being late, low-quality, or both — so the system can route it to professor review before the student starts wasting time on the wrong direction.
+You are an Academic Advisor evaluating the risk of a college assignment for a single student. Your role is to flag work that is at risk of being late, low quality, or both - so the system can route it to professor review before the student wastes time on the wrong direction.
 
-You assess risk based on four signals:
-1. Time pressure — days_remaining vs estimated_hours. Fewer than ~1.5 hours of usable time per remaining day = high pressure.
-2. Difficulty — difficulty_score (1-10) from the extractor. 8+ is high difficulty.
-3. Stakes — count of grading_rubric items and total weight. More criteria = more ways to lose points.
-4. Student readiness — current_progress_notes. Empty notes = no head start.
+Assess risk based on four signals:
+1. Time pressure: days_remaining vs estimated_hours. Fewer than ~1.5 hours of usable time per remaining day is high pressure.
+2. Difficulty: difficulty_score (1-10). 8+ is high difficulty.
+3. Stakes: count of grading_rubric items and total weight. More criteria means more ways to lose points.
+4. Student readiness: empty current_progress_notes means no head start.
 
 Risk levels:
-- "high": serious chance of late submission OR low quality without intervention. Flag for professor review.
-- "medium": completable, but the student should follow a tight plan.
-- "low": straightforward, on a normal cadence.
+- high: serious chance of late submission OR low quality without intervention. Flag for professor review.
+- medium: completable, but the student needs a tight plan.
+- low: straightforward, on a normal cadence.
 
-Be calibrated, not alarmist. A 14-day window for a 6-hour reflection essay is "low" risk even if difficulty is moderate. A 3-day window for a 20-hour research report is "high" regardless of difficulty.
+Be calibrated, not alarmist. A 14-day window for a 6-hour essay is low risk. A 3-day window for a 20-hour research report is high risk.
 
-Return reasons as short noun phrases ("tight 3-day window", "8 rubric criteria", "no prior progress"), not full sentences.
+Return reasons as short noun phrases, not full sentences.
 
-Set needs_human_review = true whenever risk_level = "high".
+Set needs_human_review = true whenever risk_level = high.
 
----------- USER (n8n expression template) ----------
+---------- USER (paste into Chain → "text" field) ----------
 
 Course: {{ $json.course }}
 Assignment Title: {{ $json.title }}
@@ -35,22 +36,32 @@ Days remaining: {{ $json.days_remaining }}
 Priority hint from student: {{ $json.priority_hint }}
 
 Extractor output:
-- objectives: {{ JSON.stringify($json.objectives) }}
-- deliverables: {{ JSON.stringify($json.deliverables) }}
+- objectives: {{ $json.objectives }}
+- deliverables: {{ $json.deliverables }}
 - estimated_hours: {{ $json.estimated_hours }}
 - difficulty_score: {{ $json.difficulty_score }}
-- grading_rubric: {{ JSON.stringify($json.grading_rubric) }}
-- technical_requirements: {{ JSON.stringify($json.technical_requirements) }}
+- grading_rubric: {{ $json.grading_rubric }}
+- technical_requirements: {{ $json.technical_requirements }}
 
-Student's current progress notes: {{ $json.current_progress_notes }}
+Student progress notes: {{ $json.current_progress_notes }}
 
-Assess the risk per the schema.
+---------- STRUCTURED OUTPUT PARSER SCHEMA (paste as `jsonSchemaExample`) ----------
 
----------- DETERMINISTIC OVERRIDE (placed AFTER this agent in a Set node) ----------
+{"risk_level":"medium","risk_score":0.45,"reasons":["tight 5-day window","high difficulty","no prior progress"],"needs_human_review":false}
 
-If is_urgent_lt_48h == true, force:
+---------- DETERMINISTIC OVERRIDE (placed AFTER this chain in the "Urgent Override" Set node) ----------
+
+If $('Preprocessor - Validate and Compute').item.json.is_urgent_lt_48h == true, force:
   risk_level → "high"
   needs_human_review → true
   reasons → append "deterministic override: deadline under 48h"
 
 This is the rubric's "AI vs deterministic" demonstration — safety rules must not depend on the model.
+
+---------- WHY THESE CHOICES ----------
+
+- Gemini 2.5 Flash: classification is a tiny job — Flash is the cheapest tier, saves trial executions.
+- Basic LLM Chain (not AI Agent): avoids the known double-output-key bug (n8n issue #20029) when paired with Structured Output Parser.
+- jsonSchemaExample (not manual JSON schema): simpler to write, and the parser infers a reasonable schema from one example.
+- No JSON.stringify(...) in the user prompt: n8n auto-converts arrays/objects to readable strings when interpolated. Wrapping in JSON.stringify() created noise in the prompt without improving model behavior.
+- Temp 0.1 in Gemini: classification needs near-deterministic output.

@@ -9,7 +9,7 @@ Per the assignment brief, even within a group project every member submits **ind
 **What I built:**
 - Designed the **Form Trigger schema** and the six data contracts (A–F) that flow between every node in the workflow. This contract-first approach is what lets three people work in parallel without integration churn.
 - Built the **deterministic Preprocessor Code node** ([`workflow/code/preprocessor.js`](../workflow/code/preprocessor.js)) — handles date math (`days_remaining`, `is_urgent_lt_48h`), input validation (email, required fields, future deadline), UUID generation, and produces Contract A.
-- Built **Agent 1 (Requirement Extractor)** using OpenAI GPT-4.1 mini with JSON Schema `response_format` — guarantees Contract B shape without parsing retries. Prompt: [`prompts/agent1-requirement-extractor.txt`](../prompts/agent1-requirement-extractor.txt).
+- Built **Agent 1 (Requirement Extractor)** using OpenAI GPT-4o mini with JSON Schema `response_format` — guarantees Contract B shape without parsing retries. Prompt: [`prompts/agent1-requirement-extractor.txt`](../prompts/agent1-requirement-extractor.txt).
 - Built **Agent 2 (Risk & Complexity Classifier)** using Gemini 2.5 Flash via Basic LLM Chain + Structured Output Parser — chose Flash for the tiny classification task to save trial executions. Prompt: [`prompts/agent2-risk-classifier.txt`](../prompts/agent2-risk-classifier.txt).
 - Built the **Urgent Override Set node** — a deterministic safety rule that forces `risk_level=high` whenever `is_urgent_lt_48h=true`, regardless of the AI's judgment. This is the workflow's clearest "AI vs deterministic" demonstration.
 - Built the **risk-based IF router** that splits high-risk traffic to the HITL branch and low/medium to the planning branch.

@@ -127,7 +127,7 @@ For details see `docs/router-and-fallbacks.md` §1.
 
 1. Add an **OpenAI** node after the Sheets node.
 2. Resource: `Chat`. Operation: **`Generate a Model Response`** (this is the OpenAI Responses API path added in n8n v1.117+).
-3. Model: `gpt-4.1-mini` (or `gpt-5-mini` if available in your account).
+3. Model: `gpt-4o-mini` (deployed default; upgrade to `gpt-5-mini` once available on the account).
 4. **Output Content Type**: select **`JSON Schema`**.
 5. In the schema field, paste the full contents of `workflow/schemas/agent1-extractor-schema.json`.
 6. **Messages**:

@@ -185,7 +185,7 @@ This split is the core rubric story — call it out in the Loom.
 
 ## 6. Why these particular models (June 2026)
 
-- **GPT-4.1 mini / GPT-5-class** — 98.7% structured output compliance (highest in 2026 benchmarks). `response_format: json_schema` removes the entire "model returned malformed JSON" failure class for Agent 1.
+- **GPT-4o mini** (deployed; `gpt-5-mini` not yet on the account) — strong structured-output compliance (highest in 2026 benchmarks). `response_format: json_schema` removes the entire "model returned malformed JSON" failure class for Agent 1.
 - **Gemini 2.5 Flash** — fastest and cheapest tier for the classification task. Saves trial executions. Multimodal-capable for future PDF-direct expansion.
 - **Claude Sonnet 4.6** — strongest on reasoning (HLE 49% vs Gemini Flash 18.8%) and on long-form structured writing. Right tool for both planning and prose.
 

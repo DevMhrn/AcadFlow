@@ -1,8 +1,8 @@
 # Agent 1 — Requirement Extractor (System Prompt)
 
-**Provider:** OpenAI (GPT-4.1 mini or current GPT-5-class)
-**Node type:** OpenAI → "Generate a Model Response"
-**response_format:** JSON Schema → paste `agent1-extractor-schema.json` (Contract B)
+**Provider:** OpenAI gpt-4o-mini (deployed; upgrade to gpt-5-mini once available)
+**Node type:** Information Extractor (@n8n/n8n-nodes-langchain.informationExtractor v1.2) + OpenAI Chat Model sub-node
+**Schema:** paste `workflow/schemas/agent1-extractor-schema.json` into `inputSchema` field with `schemaType: 'manual'`
 **Temperature:** `0.2`
 
 ---
@@ -48,7 +48,7 @@ Extract the structured requirements per the schema.
 
 ## Why these choices
 
-- **GPT-4.1 mini / GPT-5-class**: ~98.7% structured output compliance in Jun 2026 benchmarks. JSON Schema mode forces exact shape — no parsing retries.
+- **gpt-4o-mini (current) / gpt-5-mini (future)**: strong structured-output compliance in 2026 benchmarks. The Information Extractor node + manual JSON schema gives a hard contract — no parsing retries needed.
 - **Temp 0.2**: extraction should be deterministic, not creative.
 - **No JSON formatting in the prompt**: `response_format` already enforces shape. Repeating "return JSON" in the prompt sometimes causes the model to wrap output in extra strings.
 - **"Make inferences, don't refuse"**: students upload messy briefs. The workflow must keep flowing.

@@ -7,6 +7,10 @@
 credentials.json
 secrets.json
 
+# Claude Code project-scope MCP config — contains bearer tokens
+.mcp.json
+.mcp.local.json
+
 # n8n local data (if anyone self-hosts during dev)
 .n8n/
 n8n-data/

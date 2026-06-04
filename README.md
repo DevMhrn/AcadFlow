@@ -34,7 +34,7 @@ College students juggle 4–8 assignments simultaneously across different course
 | Layer | Tool |
 |---|---|
 | Workflow engine | **n8n** (cloud trial, native nodes only) |
-| AI providers | **OpenAI** (GPT-4.1 mini), **Anthropic** (Claude Sonnet 4.6), **Google** (Gemini 2.5 Flash) |
+| AI providers | **OpenAI** (gpt-4o-mini), **Anthropic** (Claude Sonnet 4.6), **Google** (Gemini 2.5 Flash) |
 | Integrations | Google Forms (via n8n Form Trigger) · Google Sheets · Google Docs · Google Calendar · Gmail |
 | Document parsing | n8n native PDF Extract |
 
@@ -103,7 +103,7 @@ Full architecture, data contracts, and per-node config: see [`docs/architecture.
 
 | # | Agent | Role | Provider / Model | Output contract |
 |---|---|---|---|---|
-| 1 | **Requirement Extractor** | Senior Teaching Assistant — parses brief into structured requirements | OpenAI GPT-4.1 mini | [Contract B](docs/plan.md#contract-b) |
+| 1 | **Requirement Extractor** | Senior Teaching Assistant — parses brief into structured requirements | OpenAI GPT-4o mini | [Contract B](docs/plan.md#contract-b) |
 | 2 | **Risk & Complexity Classifier** | Academic Advisor — assesses time-pressure × difficulty × stakes × readiness | Gemini 2.5 Flash | [Contract C](docs/plan.md#contract-c) |
 | 3 | **Personalized Planner** | Academic Coach — day-by-day execution plan within the deadline | Claude Sonnet 4.6 | [Contract D](docs/plan.md#contract-d) |
 | 4 | **Content Generator** | Subject Matter Helper — outline + starter draft + mandatory disclaimer | Claude Sonnet 4.6 | [Contract E](docs/plan.md#contract-e) |

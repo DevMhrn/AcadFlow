@@ -9,7 +9,7 @@
 
 | Agent | Provider / Model | Why this provider | n8n node setup |
 |---|---|---|---|
-| **Agent 1 — Requirement Extractor** | **OpenAI** (GPT-4.1 mini or GPT-5-class) | Highest structured-output compliance in 2026 benchmarks (~98.7%); JSON Schema `response_format` is a hard contract, no retries needed. Extraction is the most schema-critical step. | OpenAI node → "Generate a Model Response" → `response_format = JSON Schema` (paste Contract B schema) |
+| **Agent 1 — Requirement Extractor** | **OpenAI** (gpt-4o-mini deployed; gpt-5-mini once available) | Highest structured-output compliance in 2026 benchmarks (~98.7%); JSON Schema `response_format` is a hard contract, no retries needed. Extraction is the most schema-critical step. | OpenAI node → "Generate a Model Response" → `response_format = JSON Schema` (paste Contract B schema) |
 | **Agent 2 — Risk Classifier** | **Gemini** (2.5 / 3.5 Flash) | Tiny classification job — Flash is fast and cheap, perfect for saving execution budget on the 1000-exec trial. | AI Agent (LLM Chain mode) + Google Gemini Chat Model sub-node + Structured Output Parser (Contract C) |
 | **Agent 3 — Personalized Planner** | **Claude Sonnet 4.6** | Claude leads on complex reasoning and nuanced instruction-following — planning needs deadline math, hour balancing, realistic resource picks. Sonnet's structured-output compliance is solid (~97.3%). | LLM Chain + Anthropic Chat Model sub-node + Structured Output Parser (Contract D) |
 | **Agent 4 — Content Generator** | **Claude Sonnet 4.6** | Best prose quality; strongest at structured writing (outline + draft) with disclaimer compliance. | LLM Chain + Anthropic Chat Model sub-node + Structured Output Parser (Contract E) |
@@ -127,8 +127,8 @@ All of A + B + C + D + E merged on `submission_id`.
    - Set `input_valid` flag; if false, route to "Invalid Input" branch (email student with what's missing).
 4. **Google Sheets node**: append raw input row to `submissions_raw` sheet.
 5. **PDF parsing branch (if file uploaded)**: Extract from File node → text into `instructions_raw` (overrides empty raw). Native to n8n.
-6. **Agent 1: Requirement Extractor** — **OpenAI GPT-4.1 mini** (or current GPT-5-class):
-   - OpenAI node → "Generate a Model Response" → `response_format = JSON Schema`. Paste Contract B schema directly.
+6. **Agent 1: Requirement Extractor** — **OpenAI gpt-4o-mini** (deployed; upgrade to gpt-5-mini once available):
+   - Information Extractor node + OpenAI Chat Model sub-node. `schemaType: 'manual'`, paste Contract B schema as JSON string into `inputSchema`.
    - System role: "Senior Teaching Assistant who extracts structured assignment requirements."
    - Temperature 0.2 (low for extraction).
    - Output is guaranteed to match Contract B exactly — no retries, no parsing.

@@ -1,28 +1,28 @@
 AGENT 1 — REQUIREMENT EXTRACTOR
 ================================
-Provider: OpenAI (GPT-4.1 mini / GPT-5-class)
-Node:     OpenAI → "Generate a Model Response"
-Format:   response_format = JSON Schema → workflow/schemas/agent1-extractor-schema.json
+Node:     Information Extractor (@n8n/n8n-nodes-langchain.informationExtractor v1.2)
+Sub-node: OpenAI Chat Model (@n8n/n8n-nodes-langchain.lmChatOpenAi v1.3)
+Model:    gpt-4o-mini (gpt-5-mini wasn't available on the account; gpt-4o-mini benchmarks ~98% on structured extraction)
+Schema:   workflow/schemas/agent1-extractor-schema.json (paste into `inputSchema` field, with schemaType: 'manual')
 Temp:     0.2
+Max tokens: 2000
 
----------- SYSTEM ----------
+---------- SYSTEM (paste into `options.systemPromptTemplate`) ----------
 
-You are a Senior Teaching Assistant. Your job is to read an assignment brief written by a college professor and extract its structured requirements so a downstream planning agent can build a realistic execution plan for the student.
-
-You must return ONLY the JSON object defined by the response_format schema. No prose, no explanations, no markdown fences.
+You are a Senior Teaching Assistant. Extract the structured requirements from this assignment brief so a downstream planning agent can build a realistic execution plan for the student.
 
 Extraction rules:
-- objectives: distill the learning goals the assignment is testing — what the student should *demonstrate*, not what they should *do*. Phrase as outcomes ("Demonstrate ability to ...", "Analyze ...", "Compare ...").
-- deliverables: list every concrete artifact mentioned (e.g., "10-page report", "Python script implementing X", "5-minute presentation"). Be specific about format and quantity.
-- grading_rubric: extract the rubric exactly if stated. If only partial weights are given, infer the rest so the total approaches 100. If no rubric is given, infer a reasonable one from the deliverables and mark each weight as a best estimate.
-- technical_requirements: include tooling, languages, libraries, page/word counts, citation styles, file formats, submission portals, and any "must use" / "must not use" constraints.
-- estimated_hours: realistic total hours for a competent student — include reading, planning, drafting, revising, and submitting. Do not assume the student is an expert.
-- difficulty_score (1-10): consider scope, novelty of skills required, ambiguity in the brief, and time pressure (but NOT the deadline itself — that's handled separately downstream).
-- keywords: 5-10 search-friendly terms for finding learning resources later (e.g., "k-means clustering", "Porter's five forces", not "essay" or "report").
+- objectives: outcomes the student must demonstrate ("Demonstrate ability to...", "Analyze...").
+- deliverables: concrete artifacts (page counts, formats, quantities).
+- grading_rubric: extract exact weights when stated, infer fair ones when not. Total should approach 100.
+- technical_requirements: tools, languages, page/word counts, citation styles, formats, constraints.
+- estimated_hours: realistic total for a competent (not expert) student.
+- difficulty_score (1-10): scope, novelty, ambiguity. NOT the deadline.
+- keywords: 5-10 search-friendly topical terms ("k-means clustering", not "essay").
 
-If the brief is incomplete (e.g., no rubric mentioned), make the best inference you can and proceed — do not refuse or ask for clarification. Downstream nodes handle validation.
+If the brief is incomplete, make best inferences and proceed. Do not refuse.
 
----------- USER (n8n expression template) ----------
+---------- USER (paste into `text` field — n8n expression template) ----------
 
 Course: {{ $json.course }}
 Assignment Title: {{ $json.title }}
@@ -34,6 +34,13 @@ Days remaining: {{ $json.days_remaining }}
 --- BRIEF END ---
 
 Student notes about their current progress (may be empty):
-{{ $json.current_progress_notes }}
+{{ $json.current_progress_notes || "None provided" }}
 
-Extract the structured requirements per the schema.
+---------- WHY THESE CHOICES ----------
+
+- Information Extractor (purpose-built) over AI Agent + Structured Output Parser: avoids the known double-output-key nesting bug (n8n issue #20029) AND its schema enforcement is stricter.
+- `schemaType: 'manual'` + JSON string schema gives the strongest contract.
+- Temp 0.2 — extraction should be near-deterministic.
+- No "return JSON" instruction in the prompt — the schema already enforces shape; redundant instructions sometimes cause the model to wrap output in extra strings.
+- `|| "None provided"` for empty notes — gives the model something explicit to read rather than a blank string that might confuse it.
+- gpt-4o-mini chosen because gpt-5-mini is not yet available on the OpenAI account. If/when gpt-5-mini becomes available, switch in the model dropdown — no other code changes needed.

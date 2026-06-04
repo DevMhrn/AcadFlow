@@ -4,7 +4,7 @@ Clean, copy-paste versions of every system + user prompt used in AcadFlow live u
 
 | Agent | Provider | Prompt file | Schema file | Owner | Detailed notes |
 |---|---|---|---|---|---|
-| **1. Requirement Extractor** | OpenAI GPT-4.1 mini | [`prompts/agent1-requirement-extractor.txt`](../prompts/agent1-requirement-extractor.txt) | [`workflow/schemas/agent1-extractor-schema.json`](../workflow/schemas/agent1-extractor-schema.json) | Debashis | [`agent1-extractor-prompt-detailed.md`](agent1-extractor-prompt-detailed.md) |
+| **1. Requirement Extractor** | OpenAI GPT-4o mini | [`prompts/agent1-requirement-extractor.txt`](../prompts/agent1-requirement-extractor.txt) | [`workflow/schemas/agent1-extractor-schema.json`](../workflow/schemas/agent1-extractor-schema.json) | Debashis | [`agent1-extractor-prompt-detailed.md`](agent1-extractor-prompt-detailed.md) |
 | **2. Risk & Complexity Classifier** | Gemini 2.5 Flash | [`prompts/agent2-risk-classifier.txt`](../prompts/agent2-risk-classifier.txt) | [`workflow/schemas/agent2-classifier-schema.json`](../workflow/schemas/agent2-classifier-schema.json) | Debashis | [`agent2-classifier-prompt-detailed.md`](agent2-classifier-prompt-detailed.md) |
 | **3. Personalized Planner** | Claude Sonnet 4.6 | [`prompts/agent3-planner.txt`](../prompts/agent3-planner.txt) | `workflow/schemas/agent3-planner-schema.json` *(TBD — Gowtham)* | Gowtham | TBD |
 | **4. Content Generator** | Claude Sonnet 4.6 | [`prompts/agent4-content-generator.txt`](../prompts/agent4-content-generator.txt) | `workflow/schemas/agent4-content-schema.json` *(TBD — Gowtham)* | Gowtham | TBD |
