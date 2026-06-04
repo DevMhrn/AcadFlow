@@ -2,9 +2,9 @@
   "_synced_from_n8n_at": "2026-06-04T13:52:00.740Z",
   "_workflow_id": "qoIO1YYIDt8Qn2XQ",
   "_workflow_url": "https://debashismaharana37.app.n8n.cloud/workflow/qoIO1YYIDt8Qn2XQ",
-  "_note": "This is the M1+M2 portion built by Debashis. Re-export this file (Workflow menu → Download) after any UI edits to keep it in sync.",
-  "name": "AcadFlow - Main (M1+M2)",
-  "description": "M1+M2 of AcadFlow: form intake, deterministic preprocessor, OpenAI requirement extractor, Gemini risk classifier with urgent override, and risk-based router. Owned by Debashis.",
+  "_note": "M1+M2 built by Debashis; M3 planning branch (Agents 3 & 4 + Validate Plan + Assemble) added by Gowtham. The M3 nodes were authored as JSON and must be imported into the n8n workspace, then re-exported here after any UI edits to keep it in sync.",
+  "name": "AcadFlow - Main (M1+M2+M3)",
+  "description": "AcadFlow M1+M2 (Debashis) + M3 (Gowtham). M1+M2: form intake, preprocessor, OpenAI extractor, Gemini risk classifier with urgent override, risk router. M3: the planning branch — Claude Sonnet 4.6 Planner, plan-fits-deadline validator, Content Generator, and Contract F assembler.",
   "active": false,
   "settings": {
     "executionOrder": "v1",
@@ -264,6 +264,214 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [2736, 640]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Assignment: {{ $json.title }} ({{ $json.course }})\nDays remaining: {{ $json.days_remaining }}\nEstimated hours: {{ $json.estimated_hours }}\nDifficulty: {{ $json.difficulty_score }}/10\nRisk level (after override): {{ $json.risk_level }}\n\nObjectives: {{ JSON.stringify($json.objectives) }}\nDeliverables: {{ JSON.stringify($json.deliverables) }}\nTechnical requirements: {{ JSON.stringify($json.technical_requirements) }}\nKeywords: {{ JSON.stringify($json.keywords) }}\nStudent progress so far: {{ $json.current_progress_notes || '(none)' }}\n\nBuild the day-by-day plan per the schema.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "see prompts/agent3-planner.txt"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "a3000001-1111-4aaa-8aaa-000000000031",
+      "name": "Agent 3 - Personalized Planner",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2960,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {
+          "temperature": 0.4,
+          "maxTokensToSample": 2048
+        }
+      },
+      "id": "a3000002-2222-4aaa-8aaa-000000000032",
+      "name": "Claude Sonnet 4.6 (Planner)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3040,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"plan\":[{\"day_offset\":0,\"task\":\"Re-read the brief and bullet-summarise 2 assigned readings\",\"hours\":2,\"deliverable_link\":null}],\"resources\":[{\"title\":\"Example resource\",\"url\":null,\"type\":\"article\"}],\"total_estimated_hours\":12}"
+      },
+      "id": "a3000003-3333-4aaa-8aaa-000000000033",
+      "name": "Planner Schema Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3200,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// See workflow/code/validate-plan.js for the authoritative source."
+      },
+      "id": "a3000004-4444-4aaa-8aaa-000000000034",
+      "name": "Validate Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        640
+      ],
+      "_jsCode_source_file": "workflow/code/validate-plan.js"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "plan-overflow-true",
+              "leftValue": "={{ $json._plan_overflow }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a3000005-5555-4aaa-8aaa-000000000035",
+      "name": "Plan Overflow?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3504,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "route",
+              "name": "route",
+              "value": "plan_needs_review",
+              "type": "string"
+            },
+            {
+              "id": "review_reason",
+              "name": "review_reason",
+              "value": "={{ $json._plan_warnings.join('; ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "a3000006-6666-4aaa-8aaa-000000000036",
+      "name": "Flag Plan for Review",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3760,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Assignment: {{ $json.title }} ({{ $json.course }})\nObjectives: {{ JSON.stringify($json.objectives) }}\nDeliverables (infer the type from these): {{ JSON.stringify($json.deliverables) }}\nTechnical requirements: {{ JSON.stringify($json.technical_requirements) }}\nGrading rubric (so emphasis matches what's graded): {{ JSON.stringify($json.grading_rubric) }}\n\nBuild the outline + starter draft per the schema.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "see prompts/agent4-content-generator.txt"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "a4000001-1111-4aaa-8aaa-000000000041",
+      "name": "Agent 4 - Content Generator",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3760,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokensToSample": 4096
+        }
+      },
+      "id": "a4000002-2222-4aaa-8aaa-000000000042",
+      "name": "Claude Sonnet 4.6 (Content)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3840,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"outline\":[{\"section\":\"Introduction\",\"bullets\":[\"Hook + context\",\"Thesis statement\"]}],\"starter_draft_markdown\":\"## Introduction \\u2014 [STUDENT TO EXPAND: write the opening paragraph here]\",\"disclaimer\":\"AI-generated content for reference only. The student must rewrite, expand, and verify all claims before submission.\"}"
+      },
+      "id": "a4000003-3333-4aaa-8aaa-000000000043",
+      "name": "Content Schema Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4000,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// See workflow/code/merge-plan-content.js for the authoritative source."
+      },
+      "id": "a4000004-4444-4aaa-8aaa-000000000044",
+      "name": "Assemble Planning Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4080,
+        736
+      ],
+      "_jsCode_source_file": "workflow/code/merge-plan-content.js"
     }
   ],
   "connections": {
@@ -279,6 +487,15 @@
     "Risk Schema Parser": { "ai_outputParser": [[{ "node": "Agent 2 - Risk and Complexity Classifier", "type": "ai_outputParser", "index": 0 }]] },
     "OpenAI GPT-4o mini (Extractor)": { "ai_languageModel": [[{ "node": "Agent 1 - Requirement Extractor", "type": "ai_languageModel", "index": 0 }]] },
     "Urgent Override (Deterministic)": { "main": [[{ "node": "Route by Risk", "type": "main", "index": 0 }]] },
-    "Route by Risk": { "main": [[{ "node": "HITL Branch Entry (Navneet wires here)", "type": "main", "index": 0 }], [{ "node": "Planning Branch Entry (Gowtham wires here)", "type": "main", "index": 0 }]] }
+    "Route by Risk": { "main": [[{ "node": "HITL Branch Entry (Navneet wires here)", "type": "main", "index": 0 }], [{ "node": "Planning Branch Entry (Gowtham wires here)", "type": "main", "index": 0 }]] },
+    "Planning Branch Entry (Gowtham wires here)": { "main": [[{ "node": "Agent 3 - Personalized Planner", "type": "main", "index": 0 }]] },
+    "Claude Sonnet 4.6 (Planner)": { "ai_languageModel": [[{ "node": "Agent 3 - Personalized Planner", "type": "ai_languageModel", "index": 0 }]] },
+    "Planner Schema Parser": { "ai_outputParser": [[{ "node": "Agent 3 - Personalized Planner", "type": "ai_outputParser", "index": 0 }]] },
+    "Agent 3 - Personalized Planner": { "main": [[{ "node": "Validate Plan", "type": "main", "index": 0 }]] },
+    "Validate Plan": { "main": [[{ "node": "Plan Overflow?", "type": "main", "index": 0 }]] },
+    "Plan Overflow?": { "main": [[{ "node": "Flag Plan for Review", "type": "main", "index": 0 }], [{ "node": "Agent 4 - Content Generator", "type": "main", "index": 0 }]] },
+    "Claude Sonnet 4.6 (Content)": { "ai_languageModel": [[{ "node": "Agent 4 - Content Generator", "type": "ai_languageModel", "index": 0 }]] },
+    "Content Schema Parser": { "ai_outputParser": [[{ "node": "Agent 4 - Content Generator", "type": "ai_outputParser", "index": 0 }]] },
+    "Agent 4 - Content Generator": { "main": [[{ "node": "Assemble Planning Payload", "type": "main", "index": 0 }]] }
   }
 }
