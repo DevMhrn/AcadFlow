@@ -1,10 +1,21 @@
 {
-  "_synced_from_n8n_at": "2026-06-04T13:52:00.740Z",
+  "_synced_from_n8n_at": "2026-06-04T18:14:48.907Z",
   "_workflow_id": "qoIO1YYIDt8Qn2XQ",
   "_workflow_url": "https://debashismaharana37.app.n8n.cloud/workflow/qoIO1YYIDt8Qn2XQ",
-  "_note": "M1+M2 built by Debashis; M3 planning branch (Agents 3 & 4 + Validate Plan + Assemble) added by Gowtham. The M3 nodes were authored as JSON and must be imported into the n8n workspace, then re-exported here after any UI edits to keep it in sync.",
-  "name": "AcadFlow - Main (M1+M2+M3)",
-  "description": "AcadFlow M1+M2 (Debashis) + M3 (Gowtham). M1+M2: form intake, preprocessor, OpenAI extractor, Gemini risk classifier with urgent override, risk router. M3: the planning branch — Claude Sonnet 4.6 Planner, plan-fits-deadline validator, Content Generator, and Contract F assembler.",
+  "_node_count": 33,
+  "_version_id": "ee80f1e4-373a-4230-9bb5-1a2774fa5441",
+  "_note": "Live cloud workflow has M1+M2 (Debashis) + M3 (Gowtham) + M4 (Navneet), 33 nodes total. M1+M2 covers form intake, preprocessor, OpenAI extractor, Gemini 2.5 Pro classifier with urgent override + deterministic fallback, risk router. M3: Claude Sonnet 4.6 Planner, plan-fits-deadline validator, Content Generator. M4: HITL Gmail sendAndWait, Enrich Decision, Format Plan Doc Body, Final Doc Create + Populate, Calendar event, Master Sheet row, Student notification email.",
+  "_changes_since_last_export": [
+    "Gemini Flash -> Gemini 2.5 Pro (Classifier) for stricter JSON output compliance",
+    "Risk Schema Parser switched to schemaType:'manual' with enum constraints + autoFix:true",
+    "Classifier Error Fallback rebuilt from Set node into Code node with deterministic risk computation (see workflow/code/classifier-fallback.js)",
+    "Format Plan Doc Body Code node added between Final Doc Create and Populate (see workflow/code/format-plan-doc-body.js)",
+    "Validate and Merge Extractor Output: defensive version handles wrapped/flat output + lenient critical-only failure (see workflow/code/validate-extractor.js)",
+    "HITL professor email recipient set to debashis.maharana@scaler.com (test); change to real professor email before prod use"
+  ],
+  "_resync_instructions": "After any change in the n8n UI, re-export the workflow (Workflow menu -> Download) and overwrite this file. The cloud is the source of truth.",
+  "name": "AcadFlow - Main (M1+M2+M3+M4)",
+  "description": "M1+M2 (Debashis) + M3 (Gowtham) + M4 (Navneet). Form intake -> preprocessor -> Agent 1 (OpenAI extractor) -> Agent 2 (Gemini 2.5 Pro classifier + deterministic fallback) -> Urgent Override (deterministic) -> Risk Router -> [HITL professor approval | Planning] -> Agent 3 (Claude Planner) -> Validate Plan -> Agent 4 (Claude Content) -> Final Doc Create -> Format Plan Doc Body -> Populate Doc -> Calendar event -> Master Sheet row -> Student notification email.",
   "active": false,
   "settings": {
     "executionOrder": "v1",

@@ -1,32 +1,47 @@
 AGENT 2 — RISK & COMPLEXITY CLASSIFIER
 =======================================
-Node:        Basic LLM Chain (@n8n/n8n-nodes-langchain.chainLlm v1.9)
-Sub-nodes:   - Google Gemini Chat Model (@n8n/n8n-nodes-langchain.lmChatGoogleGemini v1.1) — modelName: models/gemini-2.5-flash
-             - Structured Output Parser (@n8n/n8n-nodes-langchain.outputParserStructured v1.3) — schemaType: 'fromJson'
+Node:        Basic LLM Chain (@n8n/n8n-nodes-langchain.chainLlm v1.9), with `onError: "continueErrorOutput"`
+Sub-nodes:   - Google Gemini Chat Model (@n8n/n8n-nodes-langchain.lmChatGoogleGemini v1.1) — modelName: models/gemini-2.5-pro
+             - Structured Output Parser (@n8n/n8n-nodes-langchain.outputParserStructured v1.3) — schemaType: 'manual', autoFix: true
 Temp:        0.1 (in Gemini sub-node)
 Max output tokens: 1024
 LLM Chain "Require Specific Output Format": ON ✅
+Fallback:    On parse failure, error output routes to `Classifier Error Fallback` (Code node) which computes risk deterministically.
+             See workflow/code/classifier-fallback.js.
 
 ---------- SYSTEM (paste into Chain → Messages → SystemMessagePromptTemplate) ----------
 
-You are an Academic Advisor evaluating the risk of a college assignment for a single student. Your role is to flag work that is at risk of being late, low quality, or both - so the system can route it to professor review before the student wastes time on the wrong direction.
+You are an Academic Advisor who classifies the risk of a college assignment for a single student.
 
-Assess risk based on four signals:
-1. Time pressure: days_remaining vs estimated_hours. Fewer than ~1.5 hours of usable time per remaining day is high pressure.
-2. Difficulty: difficulty_score (1-10). 8+ is high difficulty.
-3. Stakes: count of grading_rubric items and total weight. More criteria means more ways to lose points.
-4. Student readiness: empty current_progress_notes means no head start.
+INPUT SIGNALS (provided in the user message):
+- days_remaining: integer (days until deadline)
+- estimated_hours: number (realistic total work hours)
+- difficulty_score: integer 1-10
+- grading_rubric: list of criteria with weights
+- current_progress_notes: string (may be empty)
+- priority_hint: string or null
 
-Risk levels:
-- high: serious chance of late submission OR low quality without intervention. Flag for professor review.
-- medium: completable, but the student needs a tight plan.
-- low: straightforward, on a normal cadence.
+RISK LEVELS:
+- "high": serious chance of being late OR low-quality without intervention. Examples: <3 days for 20+ hour work; difficulty 9+; deadline already passed.
+- "medium": completable but the student needs a tight plan.
+- "low": straightforward, comfortable timeline.
 
-Be calibrated, not alarmist. A 14-day window for a 6-hour essay is low risk. A 3-day window for a 20-hour research report is high risk.
+BE CALIBRATED. A 14-day window for a 6h essay is LOW even if difficulty is moderate. A 3-day window for a 20h research report is HIGH regardless of progress.
 
-Return reasons as short noun phrases, not full sentences.
+=== OUTPUT FORMAT - CRITICAL ===
 
-Set needs_human_review = true whenever risk_level = high.
+Return a SINGLE JSON OBJECT. Nothing else. No explanation. No markdown fences. No prose before or after. Just the raw JSON.
+
+Exact shape:
+{"risk_level":"low","risk_score":0.2,"reasons":["comfortable 14-day window","low difficulty"],"needs_human_review":false}
+
+Field rules:
+- risk_level: MUST be the lowercase string "high" or "medium" or "low". Not "High", not "HIGH".
+- risk_score: a number between 0.0 and 1.0 (e.g., 0.2, 0.45, 0.85). Not a string.
+- reasons: an array of 1 to 4 short strings. Use noun phrases like "tight 3-day window", "8 rubric criteria", "no prior progress". Not full sentences.
+- needs_human_review: the JSON boolean true or false (lowercase, unquoted). Set to true whenever risk_level is "high".
+
+AGAIN: output ONLY the JSON object. No ```json wrapper. No leading or trailing text.
 
 ---------- USER (paste into Chain → "text" field) ----------
 
@@ -45,9 +60,9 @@ Extractor output:
 
 Student progress notes: {{ $json.current_progress_notes }}
 
----------- STRUCTURED OUTPUT PARSER SCHEMA (paste as `jsonSchemaExample`) ----------
+---------- STRUCTURED OUTPUT PARSER SCHEMA (paste into Risk Schema Parser → schemaType: manual → inputSchema) ----------
 
-{"risk_level":"medium","risk_score":0.45,"reasons":["tight 5-day window","high difficulty","no prior progress"],"needs_human_review":false}
+{"type":"object","required":["risk_level","risk_score","reasons","needs_human_review"],"additionalProperties":false,"properties":{"risk_level":{"type":"string","enum":["high","medium","low"],"description":"Overall risk classification"},"risk_score":{"type":"number","minimum":0,"maximum":1,"description":"Continuous risk score 0 to 1"},"reasons":{"type":"array","items":{"type":"string"},"minItems":1,"maxItems":4,"description":"Short noun-phrase reasons for the risk assessment"},"needs_human_review":{"type":"boolean","description":"True if professor review is needed before student starts"}}}
 
 ---------- DETERMINISTIC OVERRIDE (placed AFTER this chain in the "Urgent Override" Set node) ----------
 
@@ -60,8 +75,10 @@ This is the rubric's "AI vs deterministic" demonstration — safety rules must n
 
 ---------- WHY THESE CHOICES ----------
 
-- Gemini 2.5 Flash: classification is a tiny job — Flash is the cheapest tier, saves trial executions.
+- Gemini 2.5 Pro (upgraded from Flash): Flash had inconsistent JSON compliance — wrapping in ```json fences, adding prose, capitalizing enums. Pro is materially more reliable for strict structured outputs.
 - Basic LLM Chain (not AI Agent): avoids the known double-output-key bug (n8n issue #20029) when paired with Structured Output Parser.
-- jsonSchemaExample (not manual JSON schema): simpler to write, and the parser infers a reasonable schema from one example.
+- schemaType: 'manual' with explicit JSON Schema and `enum` constraints: included in the autoFix retry prompt, so the model is told exactly what valid values look like. Stricter than `jsonSchemaExample`.
+- autoFix: true: on parse failure, the parser retries once with an LLM call that includes the validation error message. Catches transient JSON formatting glitches.
+- onError: 'continueErrorOutput' on the chain: if even autoFix fails, the workflow routes to the `Classifier Error Fallback` Code node which computes risk deterministically from days_remaining / estimated_hours / difficulty / progress. The chain never halts the workflow.
 - No JSON.stringify(...) in the user prompt: n8n auto-converts arrays/objects to readable strings when interpolated. Wrapping in JSON.stringify() created noise in the prompt without improving model behavior.
 - Temp 0.1 in Gemini: classification needs near-deterministic output.
