@@ -1,0 +1,69 @@
+{
+  "_comment": "Four test fixtures for the AcadFlow M1+M2 phase. Paste these into the Form Trigger's Test panel (or POST as JSON to the webhook URL) to exercise every branch without burning many of the 1000 trial executions. Note: deadline_iso values are relative to 2026-06-04 (today). Adjust if you test on another date.",
+  "test_1_low_risk": {
+    "Student Email": "debashis.test@scaler.ai",
+    "Course": "PHIL 201 - Ethics in Tech",
+    "Assignment Title": "Reflection essay on algorithmic fairness",
+    "Instructions": "Write a 2-page (approx 800 words) personal reflection on one case study from Module 3 dealing with algorithmic bias. Cite at least 2 of the assigned readings. APA style. Submit as PDF to the LMS by the deadline. Rubric: Clarity of argument 40%, Use of course material 30%, Reflection depth 20%, Mechanics 10%.",
+    "Deadline": "2026-06-18T23:59:00",
+    "Current Progress / Notes": "I have read the case study and started a bullet outline.",
+    "Priority": "low",
+    "_expected": {
+      "input_valid": true,
+      "days_remaining": 14,
+      "is_urgent_lt_48h": false,
+      "extractor_difficulty_score": "3-5",
+      "classifier_risk_level": "low",
+      "route": "planning"
+    }
+  },
+  "test_2_medium_risk": {
+    "Student Email": "debashis.test@scaler.ai",
+    "Course": "CS 340 - Distributed Systems",
+    "Assignment Title": "Raft consensus implementation",
+    "Instructions": "Implement a simplified Raft consensus protocol in Go or Rust. Required: leader election, log replication, basic safety guarantees. Submit a single repo with a README, unit tests, and a 1-page design doc. Rubric: Correctness 40%, Test coverage 25%, Design doc clarity 20%, Code quality 15%. Must use Go 1.22+ or Rust 1.78+.",
+    "Deadline": "2026-06-09T23:59:00",
+    "Current Progress / Notes": "",
+    "Priority": null,
+    "_expected": {
+      "input_valid": true,
+      "days_remaining": 5,
+      "is_urgent_lt_48h": false,
+      "extractor_difficulty_score": "7-9",
+      "classifier_risk_level": "medium",
+      "route": "planning"
+    }
+  },
+  "test_3_high_risk_urgent_override": {
+    "Student Email": "debashis.test@scaler.ai",
+    "Course": "MBA 510 - Strategic Management",
+    "Assignment Title": "Group capstone — Industry analysis & growth strategy",
+    "Instructions": "20-page industry analysis using Porter's Five Forces and PESTEL. Pick a public company, model 3 growth strategies with NPV projections (5-year horizon), recommend one. Include exec summary, methodology, financial model (Excel), and 10-slide deck. Cite 15+ peer-reviewed sources. Submit as a zip. Rubric: Analytical rigor 30%, Financial modeling 25%, Strategic insight 20%, Presentation quality 15%, Citations 10%.",
+    "Deadline": "2026-06-05T18:00:00",
+    "Current Progress / Notes": "We have a company picked but nothing else.",
+    "Priority": "high",
+    "_expected": {
+      "input_valid": true,
+      "days_remaining": 1,
+      "is_urgent_lt_48h": true,
+      "extractor_difficulty_score": "8-10",
+      "classifier_risk_level": "high (forced by urgent override even if model says medium)",
+      "route": "hitl",
+      "deterministic_override_triggered": true
+    }
+  },
+  "test_4_invalid_input": {
+    "Student Email": "not-an-email",
+    "Course": "",
+    "Assignment Title": "",
+    "Instructions": "",
+    "Deadline": "2025-01-01T00:00:00",
+    "Current Progress / Notes": "",
+    "Priority": null,
+    "_expected": {
+      "input_valid": false,
+      "validation_errors_contains": ["email", "course", "title", "instructions", "deadline"],
+      "route": "rejected_to_student_email_branch"
+    }
+  }
+}

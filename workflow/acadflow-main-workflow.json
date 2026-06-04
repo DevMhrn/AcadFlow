@@ -1,0 +1,19 @@
+{
+  "_placeholder": true,
+  "_instructions": [
+    "This file will be replaced with the exported n8n workflow JSON.",
+    "Steps to populate:",
+    "1. Open the AcadFlow workflow in n8n cloud.",
+    "2. Click the workflow's '...' menu → Download.",
+    "3. Save the downloaded JSON over this file (keep the filename: acadflow-main-workflow.json).",
+    "4. Strip credential IDs before committing (n8n usually does this on export, but verify).",
+    "5. Re-import on any n8n instance via Workflows → Import from File → this file."
+  ],
+  "name": "AcadFlow — Main",
+  "nodes": [],
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

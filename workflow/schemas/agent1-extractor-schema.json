@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "objectives",
+    "deliverables",
+    "grading_rubric",
+    "technical_requirements",
+    "estimated_hours",
+    "difficulty_score",
+    "keywords"
+  ],
+  "properties": {
+    "objectives": {
+      "type": "array",
+      "description": "Learning objectives or goals the assignment is meant to achieve.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Concrete artifacts the student must submit (essay, report, code, slides, etc.).",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "grading_rubric": {
+      "type": "array",
+      "description": "Rubric criteria with their weight as percentage (0-100). Weights should sum to ~100.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterion", "weight_pct"],
+        "properties": {
+          "criterion": { "type": "string" },
+          "weight_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "technical_requirements": {
+      "type": "array",
+      "description": "Tools, languages, libraries, formats, page/word counts, citation styles, etc.",
+      "items": { "type": "string" }
+    },
+    "estimated_hours": {
+      "type": "number",
+      "description": "Realistic total hours needed for a competent student to complete this work end-to-end.",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "difficulty_score": {
+      "type": "integer",
+      "description": "Difficulty from 1 (trivial) to 10 (very hard).",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "keywords": {
+      "type": "array",
+      "description": "5-10 topical keywords for resource lookup downstream.",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 10
+    }
+  }
+}

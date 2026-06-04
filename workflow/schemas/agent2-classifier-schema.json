@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["risk_level", "risk_score", "reasons", "needs_human_review"],
+  "properties": {
+    "risk_level": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Overall risk that the student will fail to complete this assignment on time and at acceptable quality."
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Continuous risk score from 0 (no risk) to 1 (severe risk)."
+    },
+    "reasons": {
+      "type": "array",
+      "description": "Short human-readable reasons supporting the risk level. 1-4 items.",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 4
+    },
+    "needs_human_review": {
+      "type": "boolean",
+      "description": "True when the assignment is high-stakes enough to warrant emailing the professor/TA before the student begins. Should be true whenever risk_level is 'high'."
+    }
+  }
+}

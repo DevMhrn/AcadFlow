@@ -224,14 +224,14 @@ All of A + B + C + D + E merged on `submission_id`.
 
 Each member submits **individually**:
 - [ ] Loom video (5–8 min) walking through the workflow, problem framing, AI-vs-deterministic, sample input/output, individual contribution.
-- [ ] Problem statement (use AcadFlow.md §2 verbatim, plus 1 paragraph on your contribution).
+- [ ] Problem statement (use `docs/acadflow-design.md` §2 verbatim, plus 1 paragraph on your contribution).
 - [ ] Workflow explanation (1 page, your slice + how it connects).
 - [ ] Contribution note (use the bullets above for your member section).
 - [ ] GitHub repo containing:
   - [ ] README with screenshots of the workflow canvas
   - [ ] Exported n8n workflow JSON
   - [ ] Sample input JSON + expected output JSON for all 4 test cases
-  - [ ] PLAN.md (this file) + AcadFlow.md + Requirement.md
+  - [ ] `docs/plan.md` (this file) + `docs/acadflow-design.md` + `docs/requirement.md`
 
 ---
 

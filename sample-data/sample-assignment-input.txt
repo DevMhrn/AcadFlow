@@ -1,0 +1,42 @@
+Course: CS 340 — Distributed Systems
+Assignment Title: Raft Consensus Implementation
+Deadline: 2026-06-09 23:59 IST
+Priority: (left blank)
+
+Instructions:
+=============
+
+Implement a simplified version of the Raft consensus protocol in either Go (1.22+)
+or Rust (1.78+).
+
+Required functionality:
+  - Leader election (term-based, with randomized election timeouts)
+  - Log replication (AppendEntries RPC)
+  - Basic safety guarantees (no two leaders in the same term, committed
+    entries never overwritten)
+
+Deliverables:
+  - A single Git repository with:
+      * Source code (Go or Rust, your choice)
+      * A README.md describing how to build and run the code
+      * Unit tests covering at least: leader election, log append, log
+        replication on a 3-node cluster
+      * A 1-page design document explaining your trade-offs
+
+Submission: zip the repo (excluding any target/ or bin/ directories) and
+upload to the course portal by the deadline.
+
+Rubric (out of 100):
+  - Correctness (does it pass the test cluster)         — 40
+  - Test coverage                                       — 25
+  - Design document clarity                             — 20
+  - Code quality (idiomatic, well-named, no dead code)  — 15
+
+You may consult the original Raft paper and any public blog posts, but you
+must cite anything you reference. No use of existing Raft libraries.
+
+Late submissions lose 10% per 24 hours.
+
+Current Progress Notes (from student):
+======================================
+"I've read the Raft extended paper. Haven't started coding yet."
