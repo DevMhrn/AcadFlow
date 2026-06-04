@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan", "resources", "total_estimated_hours"],
+  "properties": {
+    "plan": {
+      "type": "array",
+      "description": "Day-by-day execution plan. One entry per work session, ordered by day_offset ascending. Front-load research, back-load polishing/submission.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["day_offset", "task", "hours"],
+        "properties": {
+          "day_offset": {
+            "type": "integer",
+            "description": "Days from today (0 = today). The largest day_offset must be <= days_remaining - 1 so the deadline day stays free for buffer/submission.",
+            "minimum": 0
+          },
+          "task": {
+            "type": "string",
+            "description": "A concrete, startable task — NOT vague. e.g. 'Read 2 papers from the keyword list and bullet-summarise them', not 'do research'."
+          },
+          "hours": {
+            "type": "number",
+            "description": "Estimated focused hours for this single task.",
+            "minimum": 0.25,
+            "maximum": 12
+          },
+          "deliverable_link": {
+            "type": ["string", "null"],
+            "description": "Optional link to a draft/artifact produced by this task; null when there is nothing to link yet."
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "3-6 relevant resources keyed to the assignment keywords.",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "type"],
+        "properties": {
+          "title": { "type": "string" },
+          "url": {
+            "type": ["string", "null"],
+            "description": "Include a URL ONLY if you are confident it exists; otherwise null. Never invent links."
+          },
+          "type": { "type": "string", "enum": ["video", "book", "article", "tool"] }
+        }
+      }
+    },
+    "total_estimated_hours": {
+      "type": "number",
+      "description": "Sum of all plan[].hours. Must stay within +/-20% of the extractor's estimated_hours (Contract B).",
+      "minimum": 1,
+      "maximum": 200
+    }
+  }
+}

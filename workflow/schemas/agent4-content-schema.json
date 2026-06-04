@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["outline", "starter_draft_markdown", "disclaimer"],
+  "properties": {
+    "outline": {
+      "type": "array",
+      "description": "Section-by-section outline mirroring the deliverable's structure (essay: intro/body/conclusion; report: exec summary/methodology/findings/recommendations; code: module breakdown with TODO stubs).",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["section", "bullets"],
+        "properties": {
+          "section": { "type": "string" },
+          "bullets": {
+            "type": "array",
+            "description": "What the student should cover in this section.",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "starter_draft_markdown": {
+      "type": "string",
+      "description": "300-600 words of opening content in Markdown. Enough to break the blank page, NOT a finished submission. Use [STUDENT TO EXPAND: ...] for the rest and [CITE: <what to look for>] instead of inventing citations.",
+      "minLength": 1
+    },
+    "disclaimer": {
+      "type": "string",
+      "description": "Fixed disclaimer string. Must always be present and non-empty.",
+      "minLength": 1
+    }
+  }
+}
