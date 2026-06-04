@@ -28,22 +28,23 @@ Per the assignment brief, even within a group project every member submits **ind
 
 ## Gowtham — M3 (Planning + Content Generation)
 
-> *(Gowtham to fill in after Phase 1 + 3 build.)*
-
-**What I built:**
-- Built **Agent 3 (Personalized Planner)** using Claude Sonnet 4.6 via Basic LLM Chain + Structured Output Parser. Prompt: [`prompts/agent3-planner.txt`](../prompts/agent3-planner.txt). Output schema: Contract D.
-- Built a **plan-fits-deadline validator** (Code node) that sums planned hours and verifies `last day_offset ≤ days_remaining - 1`. Re-prompts once if the plan overflows; flags for review otherwise.
-- Built **Agent 4 (Content Generator)** using Claude Sonnet 4.6. Prompt: [`prompts/agent4-content-generator.txt`](../prompts/agent4-content-generator.txt). Output schema: Contract E.
-- Built the **type-aware prompt variant** that adjusts tone (formal/technical/conversational) and structure (essay/report/code) based on the deliverable type extracted by Agent 1.
-- Built the **Merge node** that combines Contracts D + E with upstream B/C before handing off to Navneet's Final Assembler.
+**What I built** (the planning branch that hangs off Debashis's `Planning Branch Entry` node — 10 nodes total):
+- Built **Agent 3 (Personalized Planner)** using Claude Sonnet 4.6 via Basic LLM Chain + Anthropic Chat Model sub-node + Structured Output Parser. Prompt: [`prompts/agent3-planner.txt`](../prompts/agent3-planner.txt). Authored the **Contract D schema** ([`workflow/schemas/agent3-planner-schema.json`](../workflow/schemas/agent3-planner-schema.json)) the parser enforces.
+- Built the **plan-fits-deadline validator** ([`workflow/code/validate-plan.js`](../workflow/code/validate-plan.js)) — a deterministic Code node that sums planned hours, checks the last `day_offset ≤ days_remaining - 1`, and verifies the total stays within ±20% of the extractor's `estimated_hours`. It re-attaches the upstream A/B/C context that the LLM-chain boundary drops (same pattern as Debashis's `validate-extractor.js`).
+- Built the **`Plan Overflow?` IF router** — on a deadline-overflow / empty plan it routes to a `Flag Plan for Review` node (deterministic guard); otherwise it continues to content generation. (A re-prompt-once loop back to Agent 3 is documented as an option but left off by default to conserve the 1000-execution trial budget.)
+- Built **Agent 4 (Content Generator)** using Claude Sonnet 4.6. Prompt: [`prompts/agent4-content-generator.txt`](../prompts/agent4-content-generator.txt). Authored the **Contract E schema** ([`workflow/schemas/agent4-content-schema.json`](../workflow/schemas/agent4-content-schema.json)).
+- Built the **type-aware prompt variant** that adjusts tone and structure (essay / report / code / deck) based on the `deliverables` extracted by Agent 1, and enforces the `[STUDENT TO EXPAND: …]` / `[CITE: …]` placeholders so the agent never writes a finished submission.
+- Built the **Contract F assembler** ([`workflow/code/merge-plan-content.js`](../workflow/code/merge-plan-content.js)) — merges Contracts D + E with upstream B/C into the single payload Navneet's Final Assembler consumes, keyed by `submission_id`. (Implemented as a Code node rather than an n8n Merge node because it deterministically re-attaches named-node context that the Merge node can't carry across the chainLlm boundary.)
+- Added **sample Planner + Content outputs** for the low- and medium-risk test cases: [`sample-data/sample-m3-outputs.json`](../sample-data/sample-m3-outputs.json).
 
 **Why I chose Claude Sonnet 4.6 for both:**
 - Sonnet 4.6 leads 2026 benchmarks on complex reasoning (needed for realistic day-by-day planning) and on long-form structured writing (needed for the outline + starter draft).
 - Picking the strongest provider per task — not "OpenAI for everything" — is itself an agentic design choice worth calling out.
+- The two clearest AI-vs-deterministic moments in my slice: the **plan-fits-deadline validator** and the **Plan Overflow router** are pure code — I don't trust the model to police its own deadline math.
 
 **How my part connects:**
-- Upstream: Debashis's IF router (medium/low risk branch) hands off Contracts A + B + C.
-- Downstream: Navneet's Final Assembler consumes the merged Contract F.
+- Upstream: Debashis's IF router (medium/low risk branch) → `Planning Branch Entry` hands off Contracts A + B + C.
+- Downstream: Navneet's Final Assembler consumes the assembled Contract F (`route = "planning_complete"`).
 
 ---
 

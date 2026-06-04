@@ -144,7 +144,7 @@ Sample inputs and expected outputs: [`sample-data/`](sample-data/).
 | Member | Responsibility | Key nodes / components |
 |---|---|---|
 | **Debashis** | Input + Preprocessing + Agents 1 & 2 + Routing (M1 + M2) | Form Trigger, Preprocessor Code node, Agent 1 (OpenAI Extractor), Agent 2 (Gemini Classifier), Urgent Override, Risk Router IF |
-| **Gowtham** | Planning + Content Generation (M3) | Agent 3 (Claude Planner), Agent 4 (Claude Content Generator), Merge node |
+| **Gowtham** | Planning + Content Generation (M3) | Agent 3 (Claude Sonnet 4.6 Planner) + Contract D schema, `validate-plan.js` (plan-fits-deadline guard) + Plan Overflow router, Agent 4 (Claude Sonnet 4.6 Content Generator) + Contract E schema, `merge-plan-content.js` (Contract F assembler) |
 | **Navneet** | Human-in-the-Loop + Final Assembler + Integrations (M4) | Wait node HITL, Gmail approve/reject flow, Final Assembler, Google Docs / Calendar / Sheets / Gmail outputs |
 
 Detailed individual contribution notes: [`docs/contribution-notes.md`](docs/contribution-notes.md).
@@ -163,10 +163,15 @@ AcadFlow-Intelligent-Assignment-Manager/
 │   ├── acadflow-main-workflow.json # Exported workflow (after Phase 1 build)
 │   ├── credentials-example.json    # Credential names + types (NEVER commit real keys)
 │   ├── code/
-│   │   └── preprocessor.js         # JS body for the Preprocessor Code node
+│   │   ├── preprocessor.js         # JS body for the Preprocessor Code node (Debashis)
+│   │   ├── validate-extractor.js   # Extractor output guard (Debashis)
+│   │   ├── validate-plan.js        # Plan-fits-deadline guard (Gowtham, M3)
+│   │   └── merge-plan-content.js   # Contract F assembler (Gowtham, M3)
 │   └── schemas/
 │       ├── agent1-extractor-schema.json   # Contract B
-│       └── agent2-classifier-schema.json  # Contract C
+│       ├── agent2-classifier-schema.json  # Contract C
+│       ├── agent3-planner-schema.json     # Contract D (Gowtham, M3)
+│       └── agent4-content-schema.json     # Contract E (Gowtham, M3)
 │
 ├── prompts/                        # Clean system prompts per agent
 │   ├── agent1-requirement-extractor.txt
@@ -190,6 +195,7 @@ AcadFlow-Intelligent-Assignment-Manager/
 ├── sample-data/                    # Test fixtures
 │   ├── sample-inputs.json          # 4 test cases (low/med/high/invalid)
 │   ├── sample-assignment-input.txt # Plain-text brief example
+│   ├── sample-m3-outputs.json      # Contract D + E sample outputs (Gowtham, M3)
 │   └── sample-final-output.md      # What a finished plan looks like
 │
 ├── screenshots/                    # For README + Loom (filled during build)
