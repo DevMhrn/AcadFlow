@@ -1,0 +1,70 @@
+{
+  "_comment": "M3 (Planner + Content Generator) sample outputs for the two planning-branch test cases from sample-inputs.json (test_1 low risk, test_2 medium risk). Contract D = Agent 3 (Planner) output; Contract E = Agent 4 (Content Generator) output. These are illustrative expected shapes for the README / Loom walkthrough — actual values come from Claude Sonnet 4.6 at run time. Owner: Gowtham (M3).",
+
+  "test_1_low_risk": {
+    "_assumes_extractor": { "estimated_hours": 8, "difficulty_score": 4, "days_remaining": 14 },
+
+    "contract_D_planner_output": {
+      "plan": [
+        { "day_offset": 0, "task": "Re-read the brief and turn the existing bullet outline into a 1-page section map (intro, case overview, reflection, course-material tie-in, conclusion)", "hours": 1.5, "deliverable_link": null },
+        { "day_offset": 2, "task": "Re-read the Module 3 case study and pull 3-4 direct quotes + page refs from the 2 assigned readings you'll cite", "hours": 1.5, "deliverable_link": null },
+        { "day_offset": 4, "task": "Draft the case-overview and reflection/analysis body sections (~500 words)", "hours": 2, "deliverable_link": null },
+        { "day_offset": 7, "task": "Draft the introduction and conclusion; weave the 2 readings into the analysis with APA in-text citations", "hours": 1.5, "deliverable_link": null },
+        { "day_offset": 10, "task": "Revise for argument clarity, fix APA reference list and in-text formatting, tighten mechanics", "hours": 1, "deliverable_link": null },
+        { "day_offset": 12, "task": "Final proofread, check the 800-word target, export to PDF and submit to the LMS", "hours": 0.5, "deliverable_link": null }
+      ],
+      "resources": [
+        { "title": "Purdue OWL — APA Formatting and Style Guide", "url": "https://owl.purdue.edu/owl/research_and_citation/apa_style/apa_formatting_and_style_guide/general_format.html", "type": "tool" },
+        { "title": "Module 3 assigned readings on algorithmic bias (course LMS)", "url": null, "type": "article" },
+        { "title": "Short primer video: what is algorithmic fairness?", "url": null, "type": "video" }
+      ],
+      "total_estimated_hours": 8,
+      "_validate_plan_flags": { "_planned_hours": 8, "_last_day_offset": 12, "_plan_fits_deadline": true, "_plan_hours_in_budget": true, "_plan_overflow": false, "_plan_warnings": [] }
+    },
+
+    "contract_E_content_output": {
+      "outline": [
+        { "section": "Introduction", "bullets": ["Hook: a one-line framing of the algorithmic-fairness case", "Briefly name the Module 3 case study", "Thesis: the one claim your reflection will defend"] },
+        { "section": "Case Overview", "bullets": ["What happened in the case (2-3 sentences, neutral)", "Which fairness concern it raises (e.g. disparate impact)"] },
+        { "section": "Reflection / Analysis", "bullets": ["Your personal reaction tied to a concept from the readings", "One counter-perspective and your response", "Why it matters beyond the case"] },
+        { "section": "Connection to Course Material", "bullets": ["Reading 1: cite + how it frames the issue", "Reading 2: cite + where it complicates Reading 1"] },
+        { "section": "Conclusion", "bullets": ["Restate the thesis in light of the analysis", "One forward-looking takeaway"] }
+      ],
+      "starter_draft_markdown": "## Introduction\n\nWhen an algorithm decides who gets a loan, a job interview, or a second look from a doctor, fairness stops being abstract. The Module 3 case study makes this concrete: [STUDENT TO EXPAND: name the case in one sentence]. This reflection argues that [STUDENT TO EXPAND: state your thesis — the single claim you will defend].\n\n## Case Overview\n\nBriefly, the case involved [STUDENT TO EXPAND: 2-3 neutral sentences on what happened]. The core fairness concern it surfaces is [CITE: which fairness notion the assigned reading names — e.g. disparate impact vs. individual fairness].\n\n## Reflection\n\nMy first reaction was [STUDENT TO EXPAND]. Reading [CITE: author, year] reframed that reaction because [STUDENT TO EXPAND]. A reasonable counter-view is [STUDENT TO EXPAND], but I think [STUDENT TO EXPAND] because...\n\n[STUDENT TO EXPAND: continue the analysis and connect explicitly to the second assigned reading before the conclusion.]",
+      "disclaimer": "AI-generated content for reference only. The student must rewrite, expand, and verify all claims before submission."
+    }
+  },
+
+  "test_2_medium_risk": {
+    "_assumes_extractor": { "estimated_hours": 30, "difficulty_score": 8, "days_remaining": 5 },
+
+    "contract_D_planner_output": {
+      "plan": [
+        { "day_offset": 0, "task": "Scaffold the Go module (go 1.22+), read Raft paper sections 5.1-5.2, sketch the node state machine (follower/candidate/leader)", "hours": 4, "deliverable_link": null },
+        { "day_offset": 1, "task": "Implement leader election: term counters, election timeout, RequestVote RPC + handler; add a unit test for split-vote", "hours": 6, "deliverable_link": null },
+        { "day_offset": 2, "task": "Implement log replication: AppendEntries RPC, log matching, commit index advance; test single-leader replication", "hours": 7, "deliverable_link": null },
+        { "day_offset": 3, "task": "Add safety guarantees (election restriction, term checks on apply); write tests for leader-change and log-conflict cases", "hours": 7, "deliverable_link": null },
+        { "day_offset": 4, "task": "Write the 1-page design doc, finish README + run instructions, raise coverage on the weakest package, tag the repo", "hours": 6, "deliverable_link": null }
+      ],
+      "resources": [
+        { "title": "In Search of an Understandable Consensus Algorithm (Raft paper, Ongaro & Ousterhout)", "url": "https://raft.github.io/raft.pdf", "type": "article" },
+        { "title": "The Secret Lives of Data — Raft visualization", "url": "https://thesecretlivesofdata.com/raft/", "type": "tool" },
+        { "title": "MIT 6.824 Lab 2 (Raft) notes", "url": null, "type": "article" }
+      ],
+      "total_estimated_hours": 30,
+      "_validate_plan_flags": { "_planned_hours": 30, "_last_day_offset": 4, "_plan_fits_deadline": true, "_plan_hours_in_budget": true, "_plan_overflow": false, "_plan_warnings": ["plan is tight: 30h over 5 days averages 6h/day — clear other commitments"] }
+    },
+
+    "contract_E_content_output": {
+      "outline": [
+        { "section": "README.md", "bullets": ["One-paragraph overview of the Raft subset implemented", "Build + run + test commands", "What is and isn't implemented (scope honesty)"] },
+        { "section": "raft.go (core)", "bullets": ["// TODO: node struct: currentTerm, votedFor, log[], commitIndex, role", "// TODO: election timer + heartbeat loop", "// TODO: RequestVote + AppendEntries handlers"] },
+        { "section": "raft_election.go", "bullets": ["// TODO: startElection(): increment term, vote self, fan out RequestVote", "// TODO: stepDown() on higher term"] },
+        { "section": "raft_log.go", "bullets": ["// TODO: appendEntries consistency check (prevLogIndex/prevLogTerm)", "// TODO: advanceCommitIndex() with majority match"] },
+        { "section": "design-doc.md", "bullets": ["State machine diagram", "Which safety properties are guaranteed and how", "Known limitations + what you'd do with more time"] }
+      ],
+      "starter_draft_markdown": "# Raft (simplified) — Design Notes\n\nThis repo implements a teaching subset of the Raft consensus protocol: **leader election**, **log replication**, and the **core safety guarantees**. It does *not* implement snapshotting or membership changes ([STUDENT TO EXPAND: confirm final scope]).\n\n## Node State\n\nEach node is one of `Follower`, `Candidate`, or `Leader`. Persistent state is `currentTerm`, `votedFor`, and `log[]`; volatile state is `commitIndex` and `lastApplied`. [STUDENT TO EXPAND: note which fields you persist vs. keep in memory and why.]\n\n## Leader Election\n\nA follower that hears nothing within its randomized election timeout becomes a candidate, increments `currentTerm`, votes for itself, and sends `RequestVote` to its peers. [CITE: Raft paper §5.2 for the election-restriction rule you must enforce.]\n\n```go\n// TODO(student): implement startElection()\nfunc (n *Node) startElection() {\n    // increment term, vote for self, reset timer, fan out RequestVote\n}\n```\n\n[STUDENT TO EXPAND: fill in log replication (AppendEntries) and the commit-index advance, then write the matching unit tests before the deadline.]",
+      "disclaimer": "AI-generated content for reference only. The student must rewrite, expand, and verify all claims before submission."
+    }
+  }
+}
