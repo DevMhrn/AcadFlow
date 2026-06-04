@@ -50,24 +50,30 @@ Per the assignment brief, even within a group project every member submits **ind
 
 ## Navneet — M4 (Human-in-the-Loop + Final Assembler + Integrations)
 
-> *(Navneet to fill in after Phase 1 + 4 build.)*
-
 **What I built:**
-- Built the **HITL branch** for high-risk assignments:
-  - **Wait node** in "On Webhook Call" mode that generates a unique resume URL.
-  - **Gmail node** sending the professor a summary email with HTML approve/reject links pointing to the resume URL — eliminates email-reply parsing entirely.
-  - **Limit Wait Time = 24h** for the timeout fallback (resume with `decision=auto_approved_timeout`).
-  - **Switch node** routing post-resume by decision (`approve` / `needs_changes` / `auto_approved_timeout`).
-- Built the **Final Assembler** that runs after both branches converge:
-  - **Google Docs node** — creates a doc per submission with sections for requirements, risk assessment, plan, outline, draft, and (if HITL) professor feedback.
-  - **Google Calendar node** — creates one calendar event per task in the plan, mapping `day_offset` to actual dates.
-  - **Google Sheets node** — updates the `submissions_master` row with final doc/calendar links and status.
-  - **Gmail node** — sends the student a final notification with everything linked.
-- Built the **error-handling layer** around all Google API nodes — retry once, then email the team + log to `submissions_errors` sheet.
+- **Human-in-the-Loop (HITL) Branch for High-Risk Submissions:**
+  - Integrated the **Wait node** (`Wait for Professor Approval`) in `webhook` resume mode to pause workflow execution and dynamically generate `{{ $execution.resumeUrl }}`.
+  - Configured the **Gmail node** (`Send Professor Approval Email`) to send the professor the high-risk parameters and direct HTML action links (`?decision=approve` or `?decision=needs_changes`).
+  - Implemented a 24-hour timeout fallback using the Wait node's built-in limit settings.
+  - Developed the **Process HITL Decision** Code node ([`workflow/code/process-hitl-decision.js`](../workflow/code/process-hitl-decision.js)) to parse webhook query parameters and automatically resolve to `auto_approved_timeout` on timeout.
+  - Configured a **Switch node** to route the decision: routing approvals/timeouts to the main planning branch, and routing rejections (`needs_changes`) to an automated student notification email and master sheet status update.
+- **Robust Multi-Stage Final Assembler:**
+  - Developed the **Format Document Content** Code node ([`workflow/code/format-doc-content.js`](../workflow/code/format-doc-content.js)) to compile Contracts A–E and HITL feedback into a single cleanly formatted string.
+  - Configured the **Google Docs node** to create a new study plan doc (`Create Google Doc`) and append the structured text content (`Update Doc Content`).
+  - Wired parallel downstream branches:
+    - **Google Sheets Update:** Patches `submissions_master` with `completed` status and links.
+    - **Student Notification:** Emails the student via Gmail containing the Doc link, Calendar link, and plan summary.
+    - **Google Calendar Scheduler:** Uses an Item Lists node (`Split Plan Tasks`) to split the plan array into individual items and schedules each task as an event (`Create Calendar Event`) using Luxon date math.
+- **Resilience and Error Handling:**
+  - Set up **Log Master Row (Initial)** Google Sheets append right after `Urgent Override (Deterministic)` to ensure auditing of all submissions from start to finish.
+  - Configured automatic retry-on-failure policies (`retryOnFail: true`, `maxTries: 3`, `waitBetweenTries: 5000`) on all 9 Google Sheets, Docs, Calendar, and Gmail nodes to insulate the system from transient API rate limits.
 
-**Why webhook approval (not email parsing):**
-- Email-reply parsing is fragile (signatures, threading, formatting). The Wait node's webhook resume mode generates a deterministic URL — one click = one structured decision.
+**Why my decisions:**
+- Using a **unique webhook resume URL** with query parameters avoids error-prone email reply parsing and guarantees a robust click-to-approve interface.
+- Creating the Google Doc and updating it sequentially, followed by **parallel branching** for sheet updates/student email and calendar events, optimizes n8n execution speed.
+- Running the `Split Plan Tasks` array split on a parallel path ensures that the student notification email is sent exactly **once** instead of once per calendar event.
 
 **How my part connects:**
-- Upstream: Either Debashis's HITL branch or Gowtham's Planning branch.
-- Output: External (Doc, Calendar, Sheet, student email).
+- Upstream: Receives the high-risk branch split from Debashis's router or the final planning payload from Gowtham's content generator.
+- Downstream: Produces Google Docs, schedules Google Calendar events, updates the Google Sheet audit log, and emails notifications to students and professors.
+
