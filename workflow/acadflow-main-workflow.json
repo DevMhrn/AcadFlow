@@ -18,18 +18,66 @@
         "formDescription": "Submit an assignment brief and we'll plan it for you. Required fields are marked.",
         "formFields": {
           "values": [
-            { "fieldLabel": "Student Email", "fieldType": "email", "requiredField": true },
-            { "fieldLabel": "Course", "placeholder": "e.g. CS 340 - Distributed Systems", "requiredField": true },
-            { "fieldLabel": "Assignment Title", "requiredField": true },
-            { "fieldLabel": "Instructions", "fieldType": "textarea", "placeholder": "Paste the full assignment brief here.", "requiredField": true },
-            { "fieldLabel": "Deadline", "fieldType": "date", "requiredField": true },
-            { "fieldLabel": "Current Progress / Notes", "fieldType": "textarea" },
-            { "fieldLabel": "Priority", "fieldType": "dropdown", "fieldOptions": { "values": [{ "option": "high" }, { "option": "medium" }, { "option": "low" }] } },
-            { "fieldLabel": "Brief PDF (optional)", "fieldType": "file", "multipleFiles": false, "acceptFileTypes": ".pdf,.docx" }
+            {
+              "fieldLabel": "Student Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Course",
+              "placeholder": "e.g. CS 340 - Distributed Systems",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Assignment Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Instructions",
+              "fieldType": "textarea",
+              "placeholder": "Paste the full assignment brief here.",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Deadline",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Current Progress / Notes",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Priority",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "high"
+                  },
+                  {
+                    "option": "medium"
+                  },
+                  {
+                    "option": "low"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Brief PDF (optional)",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf,.docx"
+            }
           ]
         },
         "options": {
-          "respondWithOptions": { "values": { "formSubmittedText": "Thanks! Your assignment is being planned. You'll receive an email with your plan in a few minutes." } },
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Thanks! Your assignment is being planned. You'll receive an email with your plan in a few minutes."
+            }
+          },
           "useWorkflowTimezone": true
         }
       },
@@ -37,7 +85,10 @@
       "name": "AcadFlow Intake Form",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [240, 304]
+      "position": [
+        240,
+        304
+      ]
     },
     {
       "parameters": {
@@ -47,14 +98,33 @@
       "name": "Preprocessor - Validate and Compute",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [464, 304],
+      "position": [
+        464,
+        304
+      ],
       "_jsCode_source_file": "workflow/code/preprocessor.js"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
-          "conditions": [{ "id": "input-valid-true", "leftValue": "={{ $json.input_valid }}", "operator": { "type": "boolean", "operation": "true", "singleValue": true }, "rightValue": "" }],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "input-valid-true",
+              "leftValue": "={{ $json.input_valid }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -63,14 +133,27 @@
       "name": "Input Valid?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [688, 304]
+      "position": [
+        688,
+        304
+      ]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "route", "name": "route", "value": "rejected_invalid_input", "type": "string" },
-            { "id": "rejection_message", "name": "rejection_message", "value": "=Hi,\n\nWe couldn't process your assignment submission. Issues:\n\n- {{ $json.validation_errors.join('\\n- ') }}\n\nPlease re-submit with the missing details.\n\n- AcadFlow", "type": "string" }
+            {
+              "id": "route",
+              "name": "route",
+              "value": "rejected_invalid_input",
+              "type": "string"
+            },
+            {
+              "id": "rejection_message",
+              "name": "rejection_message",
+              "value": "=Hi,\n\nWe couldn't process your assignment submission. Issues:\n\n- {{ $json.validation_errors.join('\\n- ') }}\n\nPlease re-submit with the missing details.\n\n- AcadFlow",
+              "type": "string"
+            }
           ]
         },
         "includeOtherFields": true,
@@ -80,13 +163,26 @@
       "name": "Reject Invalid Input",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [912, 208]
+      "position": [
+        912,
+        208
+      ]
     },
     {
       "parameters": {
         "operation": "append",
-        "documentId": { "__rl": true, "value": "1RZpjhSWO6mg2PPrwnbExyqKFsmNG8T1kK1-mqqg4-l8", "mode": "list", "cachedResultName": "AcadFlow Logs" },
-        "sheetName": { "__rl": true, "value": "gid=0", "mode": "list", "cachedResultName": "submissions_raw" },
+        "documentId": {
+          "__rl": true,
+          "value": "1RZpjhSWO6mg2PPrwnbExyqKFsmNG8T1kK1-mqqg4-l8",
+          "mode": "list",
+          "cachedResultName": "AcadFlow Logs"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "submissions_raw"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
@@ -107,31 +203,48 @@
       "name": "Log Raw Submission",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [912, 400]
+      "position": [
+        912,
+        400
+      ]
     },
     {
       "parameters": {
         "text": "=Course: {{ $json.course }}\nAssignment Title: {{ $json.title }}\nDeadline (ISO): {{ $json.deadline_iso }}\nDays remaining: {{ $json.days_remaining }}\n\n--- BRIEF START ---\n{{ $json.instructions_raw }}\n--- BRIEF END ---\n\nStudent notes about their current progress (may be empty):\n{{ $json.current_progress_notes || \"None provided\" }}",
         "schemaType": "manual",
         "inputSchema": "see workflow/schemas/agent1-extractor-schema.json (stringified inline in n8n)",
-        "options": { "systemPromptTemplate": "see prompts/agent1-requirement-extractor.txt" }
+        "options": {
+          "systemPromptTemplate": "see prompts/agent1-requirement-extractor.txt"
+        }
       },
       "id": "5a14beeb-010a-482c-92ff-fdbede038e62",
       "name": "Agent 1 - Requirement Extractor",
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1.2,
-      "position": [1136, 400]
+      "position": [
+        1136,
+        400
+      ]
     },
     {
       "parameters": {
-        "model": { "__rl": true, "mode": "list", "value": "gpt-4o-mini" },
-        "options": { "maxTokens": 2000 }
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "maxTokens": 2000
+        }
       },
       "id": "70dd435b-efe9-49f4-9a97-eed953286114",
       "name": "OpenAI GPT-4o mini (Extractor)",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
-      "position": [1216, 624]
+      "position": [
+        1216,
+        624
+      ]
     },
     {
       "parameters": {
@@ -141,14 +254,33 @@
       "name": "Validate and Merge Extractor Output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1488, 400],
+      "position": [
+        1488,
+        400
+      ],
       "_jsCode_source_file": "workflow/code/validate-extractor.js"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
-          "conditions": [{ "id": "extractor-failed-true", "leftValue": "={{ $json._extractor_failed }}", "operator": { "type": "boolean", "operation": "true", "singleValue": true }, "rightValue": "" }],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "extractor-failed-true",
+              "leftValue": "={{ $json._extractor_failed }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -157,11 +289,23 @@
       "name": "Extractor Failed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1712, 400]
+      "position": [
+        1712,
+        400
+      ]
     },
     {
       "parameters": {
-        "assignments": { "assignments": [{ "id": "route", "name": "route", "value": "manual_review_extractor_failed", "type": "string" }] },
+        "assignments": {
+          "assignments": [
+            {
+              "id": "route",
+              "name": "route",
+              "value": "manual_review_extractor_failed",
+              "type": "string"
+            }
+          ]
+        },
         "includeOtherFields": true,
         "options": {}
       },
@@ -169,32 +313,50 @@
       "name": "Flag for Manual Review",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [2000, 256]
+      "position": [
+        2000,
+        256
+      ]
     },
     {
       "parameters": {
         "promptType": "define",
         "text": "=Course: {{ $json.course }}\nAssignment Title: {{ $json.title }}\nDays remaining: {{ $json.days_remaining }}\nPriority hint from student: {{ $json.priority_hint }}\n\nExtractor output:\n- objectives: {{ $json.objectives }}\n- deliverables: {{ $json.deliverables }}\n- estimated_hours: {{ $json.estimated_hours }}\n- difficulty_score: {{ $json.difficulty_score }}\n- grading_rubric: {{ $json.grading_rubric }}\n- technical_requirements: {{ $json.technical_requirements }}\n\nStudent progress notes: {{ $json.current_progress_notes }}",
         "hasOutputParser": true,
-        "messages": { "messageValues": [{ "message": "see prompts/agent2-risk-classifier.txt" }] },
+        "messages": {
+          "messageValues": [
+            {
+              "message": "see prompts/agent2-risk-classifier.txt"
+            }
+          ]
+        },
         "batching": {}
       },
       "id": "6da3c6ea-b164-459b-b012-57e7e581c6d5",
       "name": "Agent 2 - Risk and Complexity Classifier",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
-      "position": [1936, 544]
+      "position": [
+        1936,
+        544
+      ]
     },
     {
       "parameters": {
         "modelName": "models/gemini-2.5-flash",
-        "options": { "maxOutputTokens": 1024, "temperature": 0.1 }
+        "options": {
+          "maxOutputTokens": 1024,
+          "temperature": 0.1
+        }
       },
       "id": "1b7876cf-951f-4a88-a814-c80c905ebdf3",
       "name": "Gemini 2.5 Flash (Classifier)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
-      "position": [1952, 768]
+      "position": [
+        1952,
+        768
+      ]
     },
     {
       "parameters": {
@@ -204,17 +366,45 @@
       "name": "Risk Schema Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [2080, 768]
+      "position": [
+        2080,
+        768
+      ]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "risk-level-override", "name": "risk_level", "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? \"high\" : ($json.output ? $json.output.risk_level : $json.risk_level) }}", "type": "string" },
-            { "id": "needs-review-override", "name": "needs_human_review", "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? true : ($json.output ? $json.output.needs_human_review : $json.needs_human_review) }}", "type": "boolean" },
-            { "id": "risk-score-passthrough", "name": "risk_score", "value": "={{ $json.output ? $json.output.risk_score : $json.risk_score }}", "type": "number" },
-            { "id": "reasons-with-override", "name": "reasons", "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? (($json.output ? $json.output.reasons : $json.reasons) || []).concat([\"deterministic override: deadline under 48h\"]) : ($json.output ? $json.output.reasons : $json.reasons) }}", "type": "array" },
-            { "id": "submission-id-passthrough", "name": "submission_id", "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.submission_id }}", "type": "string" }
+            {
+              "id": "risk-level-override",
+              "name": "risk_level",
+              "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? \"high\" : ($json.output ? $json.output.risk_level : $json.risk_level) }}",
+              "type": "string"
+            },
+            {
+              "id": "needs-review-override",
+              "name": "needs_human_review",
+              "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? true : ($json.output ? $json.output.needs_human_review : $json.needs_human_review) }}",
+              "type": "boolean"
+            },
+            {
+              "id": "risk-score-passthrough",
+              "name": "risk_score",
+              "value": "={{ $json.output ? $json.output.risk_score : $json.risk_score }}",
+              "type": "number"
+            },
+            {
+              "id": "reasons-with-override",
+              "name": "reasons",
+              "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.is_urgent_lt_48h ? (($json.output ? $json.output.reasons : $json.reasons) || []).concat([\"deterministic override: deadline under 48h\"]) : ($json.output ? $json.output.reasons : $json.reasons) }}",
+              "type": "array"
+            },
+            {
+              "id": "submission-id-passthrough",
+              "name": "submission_id",
+              "value": "={{ $(\"Preprocessor - Validate and Compute\").item.json.submission_id }}",
+              "type": "string"
+            }
           ]
         },
         "includeOtherFields": true,
@@ -224,13 +414,31 @@
       "name": "Urgent Override (Deterministic)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [2288, 544]
+      "position": [
+        2288,
+        544
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
-          "conditions": [{ "id": "risk-high", "leftValue": "={{ $json.risk_level }}", "operator": { "type": "string", "operation": "equals" }, "rightValue": "high" }],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "risk-high",
+              "leftValue": "={{ $json.risk_level }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "high"
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -239,11 +447,23 @@
       "name": "Route by Risk",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [2512, 544]
+      "position": [
+        2512,
+        544
+      ]
     },
     {
       "parameters": {
-        "assignments": { "assignments": [{ "id": "route", "name": "route", "value": "hitl", "type": "string" }] },
+        "assignments": {
+          "assignments": [
+            {
+              "id": "route",
+              "name": "route",
+              "value": "hitl",
+              "type": "string"
+            }
+          ]
+        },
         "includeOtherFields": true,
         "options": {}
       },
@@ -251,11 +471,23 @@
       "name": "HITL Branch Entry (Navneet wires here)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [2736, 448]
+      "position": [
+        2736,
+        448
+      ]
     },
     {
       "parameters": {
-        "assignments": { "assignments": [{ "id": "route", "name": "route", "value": "planning", "type": "string" }] },
+        "assignments": {
+          "assignments": [
+            {
+              "id": "route",
+              "name": "route",
+              "value": "planning",
+              "type": "string"
+            }
+          ]
+        },
         "includeOtherFields": true,
         "options": {}
       },
@@ -263,7 +495,10 @@
       "name": "Planning Branch Entry (Gowtham wires here)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [2736, 640]
+      "position": [
+        2736,
+        640
+      ]
     },
     {
       "parameters": {
@@ -472,30 +707,791 @@
         736
       ],
       "_jsCode_source_file": "workflow/code/merge-plan-content.js"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1RZpjhSWO6mg2PPrwnbExyqKFsmNG8T1kK1-mqqg4-l8",
+          "mode": "list",
+          "cachedResultName": "AcadFlow Logs"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "submissions_master",
+          "mode": "list",
+          "cachedResultName": "submissions_master"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "submission_id": "={{ $json.submission_id }}",
+            "received_at": "={{ $json.received_at }}",
+            "student_email": "={{ $json.student_email }}",
+            "course": "={{ $json.course }}",
+            "title": "={{ $json.title }}",
+            "days_remaining": "={{ $json.days_remaining }}",
+            "risk_level": "={{ $json.risk_level }}",
+            "route": "={{ $json.risk_level === 'high' ? 'hitl' : 'planning' }}",
+            "status": "={{ $json.risk_level === 'high' ? 'awaiting_approval' : 'planning' }}",
+            "completion_pct": 0
+          }
+        },
+        "options": {}
+      },
+      "id": "e81d77b2-a4f0-4d87-9bb3-5b8d27038e91",
+      "name": "Log Master Row (Initial)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2390,
+        350
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.student_email }}",
+        "subject": "=AcadFlow Review Request: {{ $json.course }} - {{ $json.title }}",
+        "emailType": "html",
+        "html": "<h3>AcadFlow Assignment Review Request</h3><p>An assignment submission has been flagged as high-risk.</p><ul><li><strong>Course:</strong> {{ $json.course }}</li><li><strong>Title:</strong> {{ $json.title }}</li><li><strong>Risk Reasons:</strong> {{ $json.reasons.join(', ') }}</li></ul><p>Please review and approve or request changes:</p><a href=\"{{ $execution.resumeUrl }}?decision=approve\" style=\"background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 4px; margin-right: 10px;\">Approve Plan</a><a href=\"{{ $execution.resumeUrl }}?decision=needs_changes\" style=\"background-color: #f44336; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 4px;\">Request Changes</a>",
+        "options": {}
+      },
+      "id": "90e54d31-4e4b-4b4d-bd1e-53c89cfa12b1",
+      "name": "Send Professor Approval Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        2950,
+        448
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "limitWaitTime": true,
+        "maxWaitAmount": 24,
+        "maxWaitUnit": "hours",
+        "options": {}
+      },
+      "id": "d820fb1a-3e4b-4bfd-a19e-f38b02cfa321",
+      "name": "Wait for Professor Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3160,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// See workflow/code/process-hitl-decision.js for the authoritative source.\n// Inlined here in the n8n workflow."
+      },
+      "id": "62db38fb-3e4f-4d3e-ae18-f2bcf92da132",
+      "name": "Process HITL Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3370,
+        448
+      ],
+      "_jsCode_source_file": "workflow/code/process-hitl-decision.js"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.decision }}",
+        "rules": {
+          "rules": [
+            {
+              "value": "approve",
+              "output": 0
+            },
+            {
+              "value": "auto_approved_timeout",
+              "output": 0
+            },
+            {
+              "value": "needs_changes",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "id": "e38a2e1d-4ef8-43da-a991-827c1abf81b1",
+      "name": "Switch on Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        3580,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1RZpjhSWO6mg2PPrwnbExyqKFsmNG8T1kK1-mqqg4-l8",
+          "mode": "list",
+          "cachedResultName": "AcadFlow Logs"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "submissions_master",
+          "mode": "list",
+          "cachedResultName": "submissions_master"
+        },
+        "columnToMatchOn": "submission_id",
+        "valueToMatchOn": "={{ $json.submission_id }}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "needs_changes"
+          }
+        },
+        "options": {}
+      },
+      "id": "f8a7e3d1-4e7b-4d4b-bd1e-53c89cfa12b2",
+      "name": "Update Master Row (Needs Changes)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3820,
+        320
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.student_email }}",
+        "subject": "=AcadFlow Review Decision: Revision Required for {{ $json.course }}",
+        "emailType": "html",
+        "html": "<h3>AcadFlow Assignment Review Request Update</h3><p>Hi student,</p><p>Your submission for <strong>{{ $json.course }} - {{ $json.title }}</strong> has been reviewed by the professor / TA.</p><p><strong>Status:</strong> Revision Required</p><p><strong>Feedback:</strong> {{ $json.professor_feedback }}</p><p>Please re-submit your assignment brief with the requested changes.</p><p>— AcadFlow",
+        "options": {}
+      },
+      "id": "2db4e81d-4ef8-43da-a991-827c1abf81b2",
+      "name": "Email Student (Needs Changes)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        4030,
+        320
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// See workflow/code/format-doc-content.js for the authoritative source.\n// Inlined here in the n8n workflow."
+      },
+      "id": "a5000001-1111-4aaa-8aaa-000000000051",
+      "name": "Format Document Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4300,
+        736
+      ],
+      "_jsCode_source_file": "workflow/code/format-doc-content.js"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "title": "={{ $json.course }} - {{ $json.title }} - Plan",
+        "options": {}
+      },
+      "id": "a5000002-2222-4aaa-8aaa-000000000052",
+      "name": "Create Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        4520,
+        736
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": "={{ $json.documentId }}",
+        "content": "={{ $json.doc_content }}",
+        "options": {}
+      },
+      "id": "a5000003-3333-4aaa-8aaa-000000000053",
+      "name": "Update Doc Content",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        4740,
+        736
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1RZpjhSWO6mg2PPrwnbExyqKFsmNG8T1kK1-mqqg4-l8",
+          "mode": "list",
+          "cachedResultName": "AcadFlow Logs"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "submissions_master",
+          "mode": "list",
+          "cachedResultName": "submissions_master"
+        },
+        "columnToMatchOn": "submission_id",
+        "valueToMatchOn": "={{ $json.submission_id }}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "completed",
+            "doc_link": "={{ $json.alternateLink }}",
+            "calendar_link": "https://calendar.google.com/calendar/r"
+          }
+        },
+        "options": {}
+      },
+      "id": "a5000004-4444-4aaa-8aaa-000000000054",
+      "name": "Update Master Row (Completed)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4980,
+        620
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.student_email }}",
+        "subject": "=Your AcadFlow Plan Ready: {{ $json.course }} - {{ $json.title }}",
+        "emailType": "html",
+        "html": "<h3>AcadFlow Assignment Plan is Ready!</h3><p>Hi student,</p><p>We have successfully planned and analyzed your assignment for <strong>{{ $json.course }} - {{ $json.title }}</strong>.</p><p>Here are your study resources and starter doc links:</p><ul><li><strong>Study Plan Document:</strong> <a href=\"{{ $json.alternateLink }}\">View Google Doc</a></li><li><strong>Google Calendar:</strong> <a href=\"https://calendar.google.com/calendar/r\">View Calendar</a></li></ul><p><strong>Disclaimer:</strong> {{ $json.disclaimer }}</p><p>Good luck with your studying!</p><p>— AcadFlow",
+        "options": {}
+      },
+      "id": "a5000005-5555-4aaa-8aaa-000000000055",
+      "name": "Send Student Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        620
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
+    },
+    {
+      "parameters": {
+        "operation": "splitOut",
+        "fieldToSplitOut": "plan",
+        "options": {}
+      },
+      "id": "a5000006-6666-4aaa-8aaa-000000000056",
+      "name": "Split Plan Tasks",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2.2,
+      "position": [
+        4980,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list",
+          "cachedResultName": "primary"
+        },
+        "start": "={{ $now.plus({ days: $json.day_offset }).set({ hour: 10, minute: 0 }).toISO() }}",
+        "end": "={{ $now.plus({ days: $json.day_offset }).set({ hour: 10, minute: 0 }).plus({ hours: $json.hours || 2 }).toISO() }}",
+        "additionalFields": {
+          "summary": "={{ $json.course }} - {{ $json.task }}",
+          "description": "=Plan created by AcadFlow. Duration: {{ $json.hours }} hours. Priority: {{ $json.priority_hint }}"
+        }
+      },
+      "id": "a5000007-7777-4aaa-8aaa-000000000057",
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.2,
+      "position": [
+        5200,
+        840
+      ],
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      }
     }
   ],
   "connections": {
-    "AcadFlow Intake Form": { "main": [[{ "node": "Preprocessor - Validate and Compute", "type": "main", "index": 0 }]] },
-    "Preprocessor - Validate and Compute": { "main": [[{ "node": "Input Valid?", "type": "main", "index": 0 }]] },
-    "Input Valid?": { "main": [[{ "node": "Log Raw Submission", "type": "main", "index": 0 }], [{ "node": "Reject Invalid Input", "type": "main", "index": 0 }]] },
-    "Log Raw Submission": { "main": [[{ "node": "Agent 1 - Requirement Extractor", "type": "main", "index": 0 }]] },
-    "Agent 1 - Requirement Extractor": { "main": [[{ "node": "Validate and Merge Extractor Output", "type": "main", "index": 0 }]] },
-    "Validate and Merge Extractor Output": { "main": [[{ "node": "Extractor Failed?", "type": "main", "index": 0 }]] },
-    "Extractor Failed?": { "main": [[{ "node": "Flag for Manual Review", "type": "main", "index": 0 }], [{ "node": "Agent 2 - Risk and Complexity Classifier", "type": "main", "index": 0 }]] },
-    "Agent 2 - Risk and Complexity Classifier": { "main": [[{ "node": "Urgent Override (Deterministic)", "type": "main", "index": 0 }]] },
-    "Gemini 2.5 Flash (Classifier)": { "ai_languageModel": [[{ "node": "Agent 2 - Risk and Complexity Classifier", "type": "ai_languageModel", "index": 0 }]] },
-    "Risk Schema Parser": { "ai_outputParser": [[{ "node": "Agent 2 - Risk and Complexity Classifier", "type": "ai_outputParser", "index": 0 }]] },
-    "OpenAI GPT-4o mini (Extractor)": { "ai_languageModel": [[{ "node": "Agent 1 - Requirement Extractor", "type": "ai_languageModel", "index": 0 }]] },
-    "Urgent Override (Deterministic)": { "main": [[{ "node": "Route by Risk", "type": "main", "index": 0 }]] },
-    "Route by Risk": { "main": [[{ "node": "HITL Branch Entry (Navneet wires here)", "type": "main", "index": 0 }], [{ "node": "Planning Branch Entry (Gowtham wires here)", "type": "main", "index": 0 }]] },
-    "Planning Branch Entry (Gowtham wires here)": { "main": [[{ "node": "Agent 3 - Personalized Planner", "type": "main", "index": 0 }]] },
-    "Claude Sonnet 4.6 (Planner)": { "ai_languageModel": [[{ "node": "Agent 3 - Personalized Planner", "type": "ai_languageModel", "index": 0 }]] },
-    "Planner Schema Parser": { "ai_outputParser": [[{ "node": "Agent 3 - Personalized Planner", "type": "ai_outputParser", "index": 0 }]] },
-    "Agent 3 - Personalized Planner": { "main": [[{ "node": "Validate Plan", "type": "main", "index": 0 }]] },
-    "Validate Plan": { "main": [[{ "node": "Plan Overflow?", "type": "main", "index": 0 }]] },
-    "Plan Overflow?": { "main": [[{ "node": "Flag Plan for Review", "type": "main", "index": 0 }], [{ "node": "Agent 4 - Content Generator", "type": "main", "index": 0 }]] },
-    "Claude Sonnet 4.6 (Content)": { "ai_languageModel": [[{ "node": "Agent 4 - Content Generator", "type": "ai_languageModel", "index": 0 }]] },
-    "Content Schema Parser": { "ai_outputParser": [[{ "node": "Agent 4 - Content Generator", "type": "ai_outputParser", "index": 0 }]] },
-    "Agent 4 - Content Generator": { "main": [[{ "node": "Assemble Planning Payload", "type": "main", "index": 0 }]] }
+    "AcadFlow Intake Form": {
+      "main": [
+        [
+          {
+            "node": "Preprocessor - Validate and Compute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preprocessor - Validate and Compute": {
+      "main": [
+        [
+          {
+            "node": "Input Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Valid?": {
+      "main": [
+        [
+          {
+            "node": "Log Raw Submission",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Invalid Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Raw Submission": {
+      "main": [
+        [
+          {
+            "node": "Agent 1 - Requirement Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 1 - Requirement Extractor": {
+      "main": [
+        [
+          {
+            "node": "Validate and Merge Extractor Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and Merge Extractor Output": {
+      "main": [
+        [
+          {
+            "node": "Extractor Failed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extractor Failed?": {
+      "main": [
+        [
+          {
+            "node": "Flag for Manual Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent 2 - Risk and Complexity Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 2 - Risk and Complexity Classifier": {
+      "main": [
+        [
+          {
+            "node": "Urgent Override (Deterministic)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 2.5 Flash (Classifier)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 2 - Risk and Complexity Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Risk Schema Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 2 - Risk and Complexity Classifier",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o mini (Extractor)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 1 - Requirement Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Override (Deterministic)": {
+      "main": [
+        [
+          {
+            "node": "Log Master Row (Initial)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Risk": {
+      "main": [
+        [
+          {
+            "node": "HITL Branch Entry (Navneet wires here)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Planning Branch Entry (Gowtham wires here)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planning Branch Entry (Gowtham wires here)": {
+      "main": [
+        [
+          {
+            "node": "Agent 3 - Personalized Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet 4.6 (Planner)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 3 - Personalized Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planner Schema Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 3 - Personalized Planner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 3 - Personalized Planner": {
+      "main": [
+        [
+          {
+            "node": "Validate Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Plan": {
+      "main": [
+        [
+          {
+            "node": "Plan Overflow?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Overflow?": {
+      "main": [
+        [
+          {
+            "node": "Flag Plan for Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent 4 - Content Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet 4.6 (Content)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 4 - Content Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Schema Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent 4 - Content Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 4 - Content Generator": {
+      "main": [
+        [
+          {
+            "node": "Assemble Planning Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Master Row (Initial)": {
+      "main": [
+        [
+          {
+            "node": "Route by Risk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HITL Branch Entry (Navneet wires here)": {
+      "main": [
+        [
+          {
+            "node": "Send Professor Approval Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Professor Approval Email": {
+      "main": [
+        [
+          {
+            "node": "Wait for Professor Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Professor Approval": {
+      "main": [
+        [
+          {
+            "node": "Process HITL Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process HITL Decision": {
+      "main": [
+        [
+          {
+            "node": "Switch on Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Decision": {
+      "main": [
+        [
+          {
+            "node": "Planning Branch Entry (Gowtham wires here)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Master Row (Needs Changes)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Master Row (Needs Changes)": {
+      "main": [
+        [
+          {
+            "node": "Email Student (Needs Changes)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Planning Payload": {
+      "main": [
+        [
+          {
+            "node": "Format Document Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Document Content": {
+      "main": [
+        [
+          {
+            "node": "Create Google Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Update Doc Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Doc Content": {
+      "main": [
+        [
+          {
+            "node": "Update Master Row (Completed)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Plan Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Master Row (Completed)": {
+      "main": [
+        [
+          {
+            "node": "Send Student Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Plan Tasks": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   }
 }
